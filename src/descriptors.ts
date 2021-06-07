@@ -1,5 +1,5 @@
 export interface Descriptors {
-    style?: string;
-    weight?: string;
-    stretch?: string;
+	style?: string;
+	weight?: string;
+	stretch?: string;
 }
