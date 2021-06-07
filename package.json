@@ -1,0 +1,15 @@
+{
+  "name": "tfontfaceobserver",
+  "version": "0.0.0",
+  "description": "fontfaceobserver based on ts",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "damingerdai",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^4.3.2"
+  }
+}
