@@ -12,7 +12,10 @@
     "lint": "eslint --format stylish  **/*.ts",
     "prepare": "husky install"
   },
-  "author": "damingerdai",
+  "author": {
+    "name": "damingerdai",
+    "email": "mingguobin@live.com"
+  },
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.14.3",
