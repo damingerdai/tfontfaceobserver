@@ -23,7 +23,7 @@ export class Observer {
 
 	public load(text: string, timeout: number) {
 		const testString = text || 'BESbswy';
-		let timeoutId = 0;
+		let timeoutId = 0 as any;
 		const timeoutValue = timeout || this.DEFAULT_TIMEOUT;
 		const start = getTime();
 
