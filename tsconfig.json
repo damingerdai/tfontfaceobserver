@@ -5,6 +5,7 @@
     "outDir": "./dist",
     "sourceMap": true,
     "declaration": true,
+    "declarationDir": "./",
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "module": "es2020",
@@ -18,5 +19,7 @@
       "es2018",
       "dom"
     ]
-  }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
 }

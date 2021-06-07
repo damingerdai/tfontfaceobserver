@@ -1,3 +1,4 @@
+import path from 'path';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
@@ -6,7 +7,8 @@ import pkg from './package.json';
 
 const extensions = ['.js', '.ts'];
 
-const name = 'RollupTypeScriptBabel';
+const name = 'tfontfaceobserver';
+console.log(path.resolve(__dirname, 'lib'));
 
 export default {
 	input: './src/index.ts',
@@ -24,7 +26,10 @@ export default {
 		// Allow bundling cjs modules. Rollup doesn't understand cjs
 		commonjs(),
 
-		typescript(),
+		typescript({
+			tsconfig: path.resolve(__dirname, 'tsconfig.json')
+		}),
+		// typescript({ lib: ['es5', 'es6', 'dom'], target: 'es5', declaration: true }),
 
 		// Compile TypeScript/JavaScript files
 		babel({
