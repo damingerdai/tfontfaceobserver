@@ -2,59 +2,47 @@ import path from 'path';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
-import babel from '@rollup/plugin-babel';
+/*
+ * In the future, babel will be removed
+ * import babel from '@rollup/plugin-babel';
+ */
 import pkg from './package.json';
 
-const extensions = ['.js', '.ts'];
-
 const name = 'tfontfaceobserver';
-console.log(path.resolve(__dirname, 'lib'));
+const extensions = ['.js', '.ts'];
+const outputFormats = [
+	{
+		file: pkg.main,
+		format: 'cjs'
+	},
+	{
+		file: pkg.module,
+		format: 'es'
+	},
+	{
+		file: pkg.browser,
+		format: 'umd',
+		name,
+		globals: {}
+	}
+];
 
-export default {
-	input: './src/index.ts',
+const packageConfigs = outputFormats.map((f) => {
+	const packageConfig = {
+		input: path.resolve(__dirname, './src/index.ts'),
+		plugins: [
+			resolve({ extensions }),
+			commonjs(),
+			typescript({
+				tsconfig: path.resolve(__dirname, 'tsconfig.json')
+			})
+		],
+		output: f
+	};
+	if (f.format === 'umd') {
+		packageConfig.compact = true;
+	}
+	return packageConfig;
+});
 
-	/*
-	 * Specify here external modules which you don't want to include in your bundle (for instance: 'lodash', 'moment' etc.)
-	 * https://rollupjs.org/guide/en/#external
-	 */
-	external: [],
-
-	plugins: [
-		// Allows node_modules resolution
-		resolve({ extensions }),
-
-		// Allow bundling cjs modules. Rollup doesn't understand cjs
-		commonjs(),
-
-		typescript({
-			tsconfig: path.resolve(__dirname, 'tsconfig.json')
-		}),
-		// typescript({ lib: ['es5', 'es6', 'dom'], target: 'es5', declaration: true }),
-
-		// Compile TypeScript/JavaScript files
-		babel({
-			extensions,
-			babelHelpers: 'bundled',
-			include: ['src/**/*']
-		})
-	],
-
-	output: [
-		{
-			file: pkg.main,
-			format: 'cjs'
-		},
-		{
-			file: pkg.module,
-			format: 'es'
-		},
-		{
-			file: pkg.browser,
-			format: 'umd',
-			name,
-
-			// https://rollupjs.org/guide/en/#outputglobals
-			globals: {}
-		}
-	]
-};
+export default packageConfigs;
