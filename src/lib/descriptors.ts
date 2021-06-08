@@ -1,5 +1,5 @@
 export interface Descriptors {
-	style?: string;
+	style?: 'normal' | 'bold' | 'italic' | 'boldItalic' | string;
 	weight?: string;
 	stretch?: string;
 }
