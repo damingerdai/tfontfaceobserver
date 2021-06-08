@@ -7,8 +7,12 @@
   "browser": "dist/index.umd.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "LICENSE",
+    "CHANGELOG.md",
+    "README.md"
   ],
+  "sideEffects": "false",
   "repository": {
     "type": "git",
     "url": "git@github.com:damingerdai/tfontfaceobserver.git"
@@ -27,6 +31,7 @@
   },
   "homepage": "https://github.com/damingerdai/tfontfaceobserver#readme",
   "scripts": {
+    "build:js": "rollup -c",
     "build": "rimraf dist && yarn build:js",
     "lint": "eslint --format stylish  **/*.ts",
     "release": "standard-version",
