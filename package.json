@@ -6,6 +6,26 @@
   "module": "dist/index.esm.js",
   "browser": "dist/index.umd.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:damingerdai/tfontfaceobserver.git"
+  },
+  "keywords": [
+    "fontfaceobserver",
+    "typescript"
+  ],
+  "author": {
+    "name": "damingerdai",
+    "email": "mingguobin@live.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/damingerdai/tfontfaceobserver/issues"
+  },
+  "homepage": "https://github.com/damingerdai/tfontfaceobserver#readme",
   "scripts": {
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "rollup -c",
@@ -13,11 +33,6 @@
     "lint": "eslint --format stylish  **/*.ts",
     "prepare": "husky install"
   },
-  "author": {
-    "name": "damingerdai",
-    "email": "mingguobin@live.com"
-  },
-  "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.14.3",
     "@babel/preset-env": "^7.14.4",
