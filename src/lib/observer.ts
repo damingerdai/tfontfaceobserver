@@ -1,13 +1,17 @@
 import { Descriptors } from './descriptors';
 import { getTime } from './utils';
 
+// eslint-disable-next-line prefer-named-capture-group
+const AppleWebKit = /AppleWebKit\/([0-9]+)(?:\.([0-9]+))(?:\.([0-9]+))/;
+const SUPPORTS_NATIVE_FONT_LOADING = Boolean(document['fonts']);
+const DEFAULT_TIMEOUT = 3000;
+
 export class Observer {
 
 	private HAS_WEBKIT_FALLBACK_BUG: boolean | null = null;
 	private HAS_SAFARI_10_BUG: boolean | null = null;
 	private SUPPORTS_STRETCH: boolean | null = null;
 	private SUPPORTS_NATIVE_FONT_LOADING: boolean | null = null;
-	private DEFAULT_TIMEOUT = 3000;
 
 	private family: string;
 	private style: string;
@@ -21,107 +25,85 @@ export class Observer {
 		this.stretch = descriptors.stretch || 'normal';
 	}
 
-	public load(text: string, timeout: number) {
-		const testString = text || 'BESbswy';
-		let timeoutId = 0 as any;
-		const timeoutValue = timeout || this.DEFAULT_TIMEOUT;
+	public load(params?: { text?: string, timeout?: number }): Promise<void> {
+		if (!SUPPORTS_NATIVE_FONT_LOADING) {
+			throw new Error('the brower doe not support native font loading');
+		}
+		if (this.hasSafari10Bug()) {
+			throw new Error('this library does\'t support the Safari10 now');
+		}
+		const testString = params?.text || 'BESbswy';
+		const timeoutValue = params?.timeout || DEFAULT_TIMEOUT;
+		let timeoutId: ReturnType<typeof setTimeout>;
+
 		const start = getTime();
 
-		if (this.supportsNativeFontLoading() && !this.hasSafari10Bug()) {
-			const loader = new Promise<void>((resolve, reject) => {
-				const check = function () {
-					const now = getTime();
+		const loader = new Promise<void>((resolve, reject) => {
+			const check = function () {
+				const now = getTime();
 
-					if (now - start >= timeoutValue) {
-						reject(new Error(String(timeoutValue) + 'ms timeout exceeded'));
-					} else {
-						document['fonts'].load(this.getStyle('"' + this.family + '"'), testString).then(fonts => {
-							if (fonts.length >= 1) {
-								resolve();
-							} else {
-								setTimeout(check, 25);
-							}
-						}, reject);
-					}
-				};
-				check();
-			});
+				if (now - start >= timeoutValue) {
+					reject(new Error(String(timeoutValue) + 'ms timeout exceeded'));
+				} else {
+					document['fonts'].load(this.getStyle('"' + this.family + '"'), testString).then(fonts => {
+						if (fonts.length >= 1) {
+							resolve();
+						} else {
+							setTimeout(check, 25);
+						}
+					}, reject);
+				}
+			};
+			check();
+		});
 
-			const timer = new Promise((resolve, reject) => {
-				timeoutId = setTimeout(
-					function () {
-						reject(new Error(String(timeoutValue) + 'ms timeout exceeded'));
-					},
-					timeoutValue
-				);
-			});
-			return new Promise((resolve, reject) => {
-				Promise.race([timer, loader]).then(() => {
-					clearTimeout(timeoutId);
-					resolve(this);
-				}, reject);
-			});
-		}
-		/* eslint-disable-next-line prefer-promise-reject-errors */
-		return Promise.reject('the brower doe not support NativeFontLoading');
-
+		const timer = new Promise((resolve, reject) => {
+			timeoutId = setTimeout(
+				() => {
+					reject(new Error(String(timeoutValue) + 'ms timeout exceeded'));
+				},
+				timeoutValue
+			);
+		});
+		return new Promise((resolve, reject) => {
+			Promise.race([timer, loader]).then(() => {
+				clearTimeout(timeoutId);
+				resolve();
+			}, reject);
+		});
 	}
 
-	public getUserAgent() {
+	private getStyle(family: string) {
+		return [this.style, this.weight, this.supportStretch() ? this.stretch : '', '100px', family].join(' ');
+	}
+
+	private supportStretch(): boolean {
+		const div = document.createElement('div');
+
+		try {
+			div.style.font = 'condensed 100px sans-serif';
+			// eslint-disable-next-line no-empty
+		} catch (e) { }
+
+		return div.style.font !== '';
+	}
+
+	private getUserAgent(): string {
 		return window.navigator.userAgent;
 	}
 
-	public getNavigatorVendor() {
+
+	private getNavigatorVendor(): string {
 		return window.navigator.vendor;
 	}
 
-	public hasWebKitFallbackBug() {
-		if (this.HAS_WEBKIT_FALLBACK_BUG === null) {
-			const match = /AppleWebKit\/([0-9]+)(?:\.([0-9]+))/.exec(this.getUserAgent());
+	private hasSafari10Bug(): boolean {
+		if (/Apple/.test(this.getNavigatorVendor())) {
 
-			this.HAS_WEBKIT_FALLBACK_BUG = Boolean(match) &&
-				(parseInt(match[1], 10) < 536 ||
-					(parseInt(match[1], 10) === 536 &&
-						parseInt(match[2], 10) <= 11));
+			const match = AppleWebKit.exec(this.getUserAgent());
+
+			return Boolean(match) && parseInt(match[1], 10) < 603;
 		}
-		return this.HAS_WEBKIT_FALLBACK_BUG;
-	}
-
-	public hasSafari10Bug() {
-		if (this.HAS_SAFARI_10_BUG === null) {
-			if (this.supportsNativeFontLoading() && /Apple/.test(this.getNavigatorVendor())) {
-				const match = /AppleWebKit\/([0-9]+)(?:\.([0-9]+))(?:\.([0-9]+))/.exec(this.getUserAgent());
-
-				this.HAS_SAFARI_10_BUG = Boolean(match) && parseInt(match[1], 10) < 603;
-			} else {
-				this.HAS_SAFARI_10_BUG = false;
-			}
-		}
-		return this.HAS_SAFARI_10_BUG;
-	}
-
-	public supportsNativeFontLoading() {
-		if (this.SUPPORTS_NATIVE_FONT_LOADING === null) {
-			this.SUPPORTS_NATIVE_FONT_LOADING = Boolean(document['fonts']);
-		}
-		return this.SUPPORTS_NATIVE_FONT_LOADING;
-	}
-
-	public supportStretch() {
-		if (this.SUPPORTS_STRETCH === null) {
-			const div = document.createElement('div');
-
-			try {
-				div.style.font = 'condensed 100px sans-serif';
-				/* eslint-disable-next-line  no-empty */
-			} catch (e) { }
-			this.SUPPORTS_STRETCH = (div.style.font !== '');
-		}
-
-		return this.SUPPORTS_STRETCH;
-	}
-
-	private getStyle(family) {
-		return [this.style, this.weight, this.supportStretch() ? this.stretch : '', '100px', family].join(' ');
+		return false;
 	}
 }
