@@ -8,21 +8,16 @@ const DEFAULT_TIMEOUT = 3000;
 
 export class Observer {
 
-	private HAS_WEBKIT_FALLBACK_BUG: boolean | null = null;
-	private HAS_SAFARI_10_BUG: boolean | null = null;
-	private SUPPORTS_STRETCH: boolean | null = null;
-	private SUPPORTS_NATIVE_FONT_LOADING: boolean | null = null;
-
 	private family: string;
 	private style: string;
 	private weight: string;
 	private stretch: string;
 
-	constructor(family: string, descriptors: Descriptors) {
+	constructor(family?: string, descriptors?: Descriptors) {
 		this.family = family;
-		this.stretch = descriptors.stretch || 'normal';
-		this.weight = descriptors.weight || 'normal';
-		this.stretch = descriptors.stretch || 'normal';
+		this.stretch = descriptors?.stretch || 'normal';
+		this.weight = descriptors?.weight || 'normal';
+		this.stretch = descriptors?.stretch || 'normal';
 	}
 
 	public load(params?: { text?: string, timeout?: number }): Promise<void> {
@@ -39,7 +34,7 @@ export class Observer {
 		const start = getTime();
 
 		const loader = new Promise<void>((resolve, reject) => {
-			const check = function () {
+			const check = () => {
 				const now = getTime();
 
 				if (now - start >= timeoutValue) {
