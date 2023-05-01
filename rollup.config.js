@@ -34,7 +34,8 @@ const packageConfigs = outputFormats.map((f) => {
 			resolve({ extensions }),
 			commonjs(),
 			typescript({
-				tsconfig: path.resolve(__dirname, 'tsconfig.json')
+				tsconfig: path.resolve(__dirname, 'tsconfig.json'),
+				sourceMap: false
 			})
 		],
 		output: f
