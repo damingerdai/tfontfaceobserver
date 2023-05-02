@@ -17,7 +17,7 @@ const outputFormats = [
 	},
 	{
 		file: pkg.module,
-		format: 'es'
+		format: 'esm'
 	},
 	{
 		file: pkg.browser,
