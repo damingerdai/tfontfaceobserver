@@ -20,7 +20,7 @@ const outputFormats = [
 		format: 'esm'
 	},
 	{
-		file: pkg.browser,
+		file: 'dist/index.umd.js',
 		format: 'umd',
 		name,
 		globals: {}
