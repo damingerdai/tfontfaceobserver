@@ -1,6 +1,6 @@
 {
   "name": "tfontfaceobserver",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "fontfaceobserver based on ts",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
