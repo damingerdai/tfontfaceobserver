@@ -31,7 +31,7 @@ export class Ruler {
 		this.element.appendChild(this.expandable);
 	}
 
-	public setFont(font: string) {
+	public setFont(font: string): void {
 		if (font) {
 			this.element.setAttribute('style', this.element.style + `max-width:none;min-width:20px;min-height:20px;display:inline-block;overflow:hidden;overflow:hidden;position:absolute;width:auto;margin:0;padding:0;top:-999px;white-space:nowrap;font-synthesis:none;font: ${font};`);
 		}
@@ -41,17 +41,17 @@ export class Ruler {
 		return this.element.offsetWidth;
 	}
 
-	public setWidth(width: number) {
+	public setWidth(width: number): void {
 		this.element.style.width = `${width}px`;
 	}
 
-	public onScroll(callback: (number) => void) {
+	public onScroll(callback: (number) => void): void {
 		if (this.reset() && this.element.parentNode !== null) {
 			callback(this.lastOffsetWidth);
 		}
 	}
 
-	public onResize(callback: (number) => void) {
+	public onResize(callback: (number) => void): void {
 
 		const onScroll = () => {
 			this.onScroll(callback);
